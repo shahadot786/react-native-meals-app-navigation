@@ -1,27 +1,48 @@
 import {
+  View,
   Pressable,
   Text,
-  View,
   Image,
   StyleSheet,
   Platform,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-function MealItem({ title, imageUrl, duration, complexity, affordability }) {
+import MealDetails from './MealDetails';
+
+function MealItem({
+  id,
+  title,
+  imageUrl,
+  duration,
+  complexity,
+  affordability,
+}) {
+  const navigation = useNavigation();
+
+  function selectMealItemHandler() {
+    navigation.navigate('MealDetail', {
+      mealId: id,
+    });
+  }
+
   return (
     <View style={styles.mealItem}>
       <Pressable
-        android_ripple={{ color: '#ffffff00' }}
+        android_ripple={{ color: '#ccc' }}
         style={({ pressed }) => (pressed ? styles.buttonPressed : null)}
+        onPress={selectMealItemHandler}
       >
-        <View>
-          <Image style={styles.image} source={{ uri: imageUrl }} />
-          <Text style={styles.text}>{title}</Text>
-        </View>
-        <View style={styles.details}>
-          <Text style={styles.detailsItem}>{duration}m</Text>
-          <Text style={styles.detailsItem}>{complexity.toUpperCase()}</Text>
-          <Text style={styles.detailsItem}>{affordability.toUpperCase()}</Text>
+        <View style={styles.innerContainer}>
+          <View>
+            <Image source={{ uri: imageUrl }} style={styles.image} />
+            <Text style={styles.title}>{title}</Text>
+          </View>
+          <MealDetails
+            duration={duration}
+            affordability={affordability}
+            complexity={complexity}
+          />
         </View>
       </Pressable>
     </View>
@@ -32,41 +53,31 @@ export default MealItem;
 
 const styles = StyleSheet.create({
   mealItem: {
-    margin: 14,
-    overflow: 'hidden',
-    backgroundColor: 'white',
+    margin: 16,
     borderRadius: 8,
-    elevation: 4,
-    //ios
-    backgroundColor: 'white',
-    shadowColor: 'black',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
     overflow: Platform.OS === 'android' ? 'hidden' : 'visible',
+    backgroundColor: 'white',
+    elevation: 4,
+    shadowColor: 'black',
+    shadowOpacity: 0.25,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 8,
   },
   buttonPressed: {
-    opacity: 0.2,
+    opacity: 0.5,
+  },
+  innerContainer: {
+    borderRadius: 8,
+    overflow: 'hidden',
   },
   image: {
     width: '100%',
     height: 200,
   },
-  text: {
-    fontSize: 18,
+  title: {
     fontWeight: 'bold',
     textAlign: 'center',
-    marginTop: 10,
-  },
-  details: {
-    flexDirection: 'row',
-    padding: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  detailsItem: {
-    marginHorizontal: 4,
-    fontSize: 13,
-    color: '#404041',
+    fontSize: 18,
+    margin: 8,
   },
 });
